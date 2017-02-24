@@ -1,0 +1,126 @@
+---
+title: "HTML Widget - DT Example"
+author: "Melinda K. Higgins, PhD."
+date: "February 23, 2017"
+output: html_document
+---
+
+## HTML Widgets
+
+`htmlwidgets` [http://www.htmlwidgets.org/index.html](http://www.htmlwidgets.org/index.html) are helpful functions that allow you to embed interactive visualizations in HTML (Rmarkdown) reports.
+
+To get ideas and see how these functions work and can be used, see the gallery at [http://www.htmlwidgets.org/showcase_leaflet.html](http://www.htmlwidgets.org/showcase_leaflet.html) and [http://gallery.htmlwidgets.org/](http://gallery.htmlwidgets.org/).
+
+## Setup and Read-in Data
+
+The code chunk below sets up all code chunks to be displayed in the final output (`echo = TRUE`) and loads the `tidyverse` package.
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+Let's read-in the `Pesticides` dataset we used in the previous lecture. We'll then do the following:
+
+1. compute the `AVG_ESTIMATE` from the `LOW_ESTIMATE` and `HIGH_ESTIMATE` provided in the original dataset _(the `mutate()` step)_;
+
+2. `select()` the `COMPOUND, STATE_CODE, AVG_ESTIMATE` columns;
+
+3. `group_by()` group the dataset by the `COMPOUND`s - we're using this to prepare statistical summaries of the amounts of these 388 pesticides used in the US during 2014;
+
+4. finally we `summarise()` some of the descriptive statistics of the `COMPOUND`s - specifically we are capturing the median and 1st and 3rd quartiles (i.e., the limits of the interquartile range; 25th and 75th percentiles) - these are useful statisics since we know from our previous review of this dataset that many of the pesticide levels were heavily right-skewed - so reporting non-parametric statistics (median, Q1, Q3) is appropriate here.
+
+```{r adddata}
+# read in the pesticide dataset
+Pesticides <- read_csv("Pesticides.csv")
+
+pest1 <- Pesticides %>% 
+  mutate(AVG_ESTIMATE = (LOW_ESTIMATE+HIGH_ESTIMATE)/2) %>%
+  select(COMPOUND, STATE_CODE, AVG_ESTIMATE) %>%
+  group_by(COMPOUND) %>%
+  summarise(Q1 = quantile(AVG_ESTIMATE, 0.25, na.rm=TRUE),
+            medianPest = median(AVG_ESTIMATE, na.rm=TRUE),
+            Q3 = quantile(AVG_ESTIMATE, 0.75, na.rm=TRUE))
+
+# see how big this summary table/data object is
+dim(pest1)
+```
+
+Now that we have these summary stats for each of the Pesticides reported in this dataset, instead of using the `knitr::kable()` command to make a **STATIC** display table - let's instead used the `DT` package and the `datatable()` HTML widget to display **INTERACTIVELY** the information in this summary table.
+
+### TABLE: Summary Statistics for Pesticides Detected in the US During 2014
+
+For the interactive table shown below, feel free to:
+
+* sort the columns by clicking on the arrows at the top of each column;
+* make the table longer (display more rows) by clicking on the pull-down for "Show Entries"; or 
+* search for a compound by name - begin by typing the beginning of the pesticide compound and the the table will begin to narrow down to selections matching what you're typing.
+
+```{r DTdemo}
+library(DT)
+DT::datatable(pest1, options = list(pageLength = 5))
+```
+
+## Another fun HTML widget `radarchart`
+
+Another fun HTML widget that is useful for visualizing multiple dimensions using a 2D graphic. See the demos for `radarchart` at [http://gallery.htmlwidgets.org/](http://gallery.htmlwidgets.org/) - scroll towards the bottom of the page. The Github repository for this widget is [https://github.com/mangothecat/radarchart](https://github.com/mangothecat/radarchart) which includes some demo code and examples in the README file.
+
+Let's take the `Pesticides` dataset and look at the levels of 2 pesticides ("Glyphosate" and "Dichloropropene") in 6 counties in Florida in 2014. Let's make a **RADAR** plot of the levels of these 2 pesticides for the 6 counties where each county gets their own axis - so this **RADAR** chart has 6 axes. The plot is also **INTERACTIVE** so that when you "mouse-over" the points, a small pop-up box is shown with the levels of the 2 compounds at that point.
+
+```{r}
+FL_pest <- Pesticides %>%
+  mutate(AVG_ESTIMATE = (LOW_ESTIMATE+HIGH_ESTIMATE)/2) %>%
+  filter(STATE_CODE == 12) %>%
+  filter(COUNTY_CODE %in% c(9,13,15,33,35,43)) %>%
+  filter(COMPOUND %in% c("Glyphosate",
+                         "Dichloropropene")) %>%
+  select(COMPOUND, 
+         COUNTY_CODE, 
+         AVG_ESTIMATE)
+
+FL_pest_wide <- FL_pest %>%
+  spread(key = COMPOUND,
+         value = AVG_ESTIMATE)
+
+# link in the county names for Florida
+library(choroplethrMaps)
+data("county.regions")
+countyFL <- county.regions %>%
+  filter(state.fips.character == "12") %>%
+  mutate(COUNTY_CODE = region - 12000)
+
+FL_pest_wide2 <- left_join(FL_pest_wide, 
+                           countyFL,
+                           by="COUNTY_CODE")
+
+FL_pest_wide2 <- FL_pest_wide2[,c(18,2:15)]
+
+library(radarchart)
+FL_pest_wide2 <- FL_pest_wide2 %>%
+  select(county.name,
+         Dichloropropene,
+         Glyphosate)
+
+radarchart::chartJSRadar(FL_pest_wide2, 
+                         maxScale = max(FL_pest_wide2[,-1], 
+                                        na.rm=TRUE), 
+                         showToolTipLabel=TRUE)
+```
+
+```{r, echo=FALSE, eval=FALSE}
+# these code chunks hide the code and it is not run
+scores <- data.frame("Label"=c("Communicator", 
+                               "Data Wangler", 
+                               "Programmer", 
+                               "Technologist",  
+                               "Modeller", 
+                               "Visualizer"),
+                     "Rich" = c(9, 7, 4, 5, 3, 7),
+                     "Andy" = c(7, 6, 6, 2, 6, 9),
+                     "Aimee" = c(6, 5, 8, 4, 7, 6))
+
+radarchart::chartJSRadar(scores, 
+                         maxScale = 10, 
+                         showToolTipLabel=TRUE)
+```
+

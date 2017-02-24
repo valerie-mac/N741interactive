@@ -1,0 +1,65 @@
+---
+title: "Pesticides in Florida `A` Counties (2014)"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: menu
+    source_code: embed
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(d3heatmap)
+library(flexdashboard)
+library(tidyverse)
+
+# read in the pesticide dataset
+Pesticides <- read_csv("Pesticides.csv")
+
+library(stringr)
+
+FL_pest <- Pesticides %>%
+  mutate(AVG_ESTIMATE = (LOW_ESTIMATE+HIGH_ESTIMATE)/2) %>%
+  filter(STATE_CODE == 12) %>%
+  filter(COUNTY_CODE < 60) %>%
+  filter(stringr::str_detect(COMPOUND,"^A")) %>%
+  select(COMPOUND, 
+         COUNTY_CODE, 
+         AVG_ESTIMATE)
+
+FL_pest_wide <- FL_pest %>%
+  spread(key = COMPOUND,
+         value = AVG_ESTIMATE)
+
+# link in the county names for Florida
+library(choroplethrMaps)
+data("county.regions")
+countyFL <- county.regions %>%
+  filter(state.fips.character == "12") %>%
+  mutate(COUNTY_CODE = region - 12000)
+
+FL_pest_wide2 <- left_join(FL_pest_wide, 
+                           countyFL,
+                           by="COUNTY_CODE")
+
+FL_pest_wide2 <- FL_pest_wide2[,c(18,2:15)]
+```
+
+### Stats by County {data-width=650}
+
+```{r}
+FL_pest_wide2 <- as.data.frame(FL_pest_wide2)
+row.names(FL_pest_wide2) <- FL_pest_wide2$county.name
+FL_pest_wide2 <- FL_pest_wide2[,-1]
+FL_pest_wide2[is.na(FL_pest_wide2)] <- 0
+d3heatmap(FL_pest_wide2, 
+          scale = "column")
+```
+
+### Top 3 Used Pesticides {data-width=350}
+
+```{r}
+knitr::kable(FL_pest_wide2[, c("Aminopyralid", 
+                               "Atrazine", 
+                               "Azoxystrobin")])
+```
