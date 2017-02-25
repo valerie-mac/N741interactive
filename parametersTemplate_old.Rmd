@@ -1,0 +1,290 @@
+---
+title: "State-level Pesticide Report"
+author: "Melinda K. Higgins, PhD."
+date: "February 24, 2017"
+output: html_document
+params:
+  state: 
+    label: "State"
+    value: "georgia"
+    input: select
+    choices: ["alaska", "alabama", "arkansas",
+              "arizona", "california", "colorado",
+              "connecticut", "district of columbia",
+              "delaware", "florida", "georgia",
+              "hawaii", "iowa", "idaho", "illinois",
+              "indiana", "kansas", "kentucky", 
+              "louisiana", "massachusetts", "maryland",
+              "maine", "michigan", "minnesota", 
+              "missouri", "mississippi", "montana",
+              "north carolina", "north dakota", 
+              "nebraska", "new hampshire", "new jersey",
+              "new mexico", "nevada", "new york", 
+              "ohio", "oklahoma", "oregon", 
+              "pennsylvania", "rhode island", 
+              "south carolina", "south dakota", 
+              "tennessee", "texas", "utah", 
+              "virginia", "vermont", "washington",
+              "wisconsin", "west virginia", "wyoming"]
+---
+
+# Report for `r params$state`
+
+```{r setup}
+params <- data.frame(state = c("georgia"))
+
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+# read in the pesticide dataset
+Pesticides <- read_csv("Pesticides.csv")
+
+# compute avg pesticide level, add to dataset
+pest <- Pesticides %>% 
+  dplyr::mutate(AVG_ESTIMATE=(LOW_ESTIMATE+HIGH_ESTIMATE)/2) %>%
+  dplyr::mutate(region = (STATE_CODE*1000)+COUNTY_CODE)
+
+library(choroplethrMaps)
+# data("county.regions")
+data("state.regions")
+pestState <- left_join(
+  pest,
+  state.regions,
+  by = c("STATE_CODE" = "fips.numeric")
+  )
+
+# get top 3 pesticides in this state
+pestByCompound <- pestState %>%
+  dplyr::filter(region.y == params$state) %>%
+  dplyr::group_by(COMPOUND) %>%
+  dplyr::summarise(value = mean(AVG_ESTIMATE, na.rm = TRUE)) %>%
+  dplyr::arrange(desc(value))
+
+pestByCompound$COMPOUND[1:3]
+
+
+
+pestTop3 <- pest %>%
+  filter(COMPOUND == pestByCompound$COMPOUND[1] | 
+         COMPOUND == pestByCompound$COMPOUND[2] | 
+         COMPOUND == pestByCompound$COMPOUND[3]) %>%
+  select(COMPOUND,
+         STATE_CODE,
+         COUNTY_CODE,
+         AVG_ESTIMATE,
+         region)
+
+pestTop3_wide <- pestTop3 %>%
+  spread(key = COMPOUND,
+         value = AVG_ESTIMATE)
+
+pestTop3_wide[is.na(pestTop3_wide)] <- 0
+
+#pestByCounty <- pest %>%
+#  dplyr::group_by(region) %>%
+#  dplyr::summarise(value = mean(AVG_ESTIMATE, na.rm = TRUE))
+
+library(choroplethr)
+
+pestpick <- pestTop3_wide[,c(3,4)]
+names(pestpick) <- c("region","value")
+
+choroplethr::county_choropleth(
+  pestpick, 
+  title = paste0(names(pestTop3_wide[,4])), 
+  legend = "Pesticide Levels",
+  state_zoom = "georgia")
+
+pestpick <- pestTop3_wide[,c(3,5)]
+names(pestpick) <- c("region","value")
+
+choroplethr::county_choropleth(
+  pestpick, 
+  title = paste0(names(pestTop3_wide[,5])), 
+  legend = "Pesticide Levels",
+  state_zoom = "georgia")
+
+pestpick <- pestTop3_wide[,c(3,6)]
+names(pestpick) <- c("region","value")
+
+choroplethr::county_choropleth(
+  pestpick, 
+  title = paste0(names(pestTop3_wide[,6])), 
+  legend = "Pesticide Levels",
+  state_zoom = "georgia")
+
+p <- pestpick[pestpick$region>12999 & pestpick$region<14000,]
+
+# ======== hold ==================
+# load state and county map codes
+library(choroplethrMaps)
+data("county.regions")
+data("state.regions")
+
+# look at top of state.regions dataset
+head(state.regions)
+head(county.regions)
+head(pest)
+
+counties <- county.regions %>%
+  filter(state.name == params$state) %>%
+  mutate(state.code = as.numeric(state.fips.character)) %>%
+  mutate(county.code = region - (state.code*1000))
+
+pestState <- left_join(
+  pest,
+  state.regions,
+  by = c("STATE_CODE" = "fips.numeric")
+  )
+
+pestCounty <- pestState %>%
+  filter(region == params$state)
+
+pestCounty <- left_join(
+  pestCounty,
+  counties,
+  by = c("COUNTY_CODE" = "county.code")
+  )
+
+pestCountyLevels <- pestCounty %>%
+  group_by(county.name) %>%
+  summarise(avg = mean(AVG_ESTIMATE, na.rm = TRUE)) %>%
+  rename(region = county.name) %>%
+  rename(value = avg)
+
+choroplethr::county_choropleth(
+  pestCountyLevels,
+  state_zoom = "georgia"
+  )
+
+county_choropleth(df_pop_county, 
+                  title         = "California County Population Estimates", 
+                  legend        = "Population",
+                  state_zoom    = "california")
+
+# pick state
+out1 <- state.regions %>%
+  filter(region == params$state)
+
+out1
+
+county_map <- ggplot2::map_data("county") %>%
+  #filter(region == params$state) %>%
+  mutate("county.name" = "subregion")
+
+# ggplot layers to make the map
+ggplot(pestCountyLevels, aes(map_id = county.name)) +
+  geom_map(aes(fill = avg),
+           map = county_map,
+           colour="white") +
+  expand_limits(x = county_map$long, 
+                y = county_map$lat) +
+  ggtitle("Average Pesticide Levels for xxxx in 2014 ")
+
+```
+
+```{r}
+#see http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html 
+library(ggplot2)
+states <- map_data("state")
+ca_df <- subset(states, region == "california")
+counties <- map_data("county")
+ca_county <- subset(counties, region == "california")
+ca_base <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1.3) + 
+  geom_polygon(color = "black", fill = "gray")
+ca_base + theme_grey()
+ca_base + theme_grey() + 
+  geom_polygon(data = ca_county, fill = NA, color = "white") +
+  geom_polygon(color = "black", fill = NA)
+# prepare to drop the axes and ticks but leave the guides and legends
+# We can't just throw down a theme_nothing()!
+ditch_the_axes <- theme(
+  axis.text = element_blank(),
+  axis.line = element_blank(),
+  axis.ticks = element_blank(),
+  panel.border = element_blank(),
+  panel.grid = element_blank(),
+  axis.title = element_blank()
+  )
+
+q <- as.vector(runif(dim(ca_df)[1],0,100000))
+
+elbow_room1 <- ca_base + 
+      geom_polygon(aes(fill=q), 
+                       color = "white") +
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes
+
+elbow_room1 
+
+eb2 <- elbow_room1 + 
+    scale_fill_gradientn(colours = rev(rainbow(7)))
+eb2
+```
+
+
+
+
+
+```
+# to make a map of the US with ggplot2
+# we need the map_data("state")
+states_map <- ggplot2::map_data("state")
+
+# ggplot layers to make the map
+ggplot(stateLevels2, aes(map_id = region)) +
+  geom_map(aes(fill = log10(meanLevel)),
+           map = states_map,
+           colour="white") +
+  expand_limits(x = states_map$long, 
+                y = states_map$lat) +
+  ggtitle("Average Pesticide Levels (log10 scale) by State in 2014 ")
+```
+
+
+```
+
+# rename STATE_CODE to match fips.numeric in
+# the state.regions data object
+stateLevels <- stateLevels %>%
+  rename(fips.numeric = STATE_CODE)
+
+head(stateLevels)
+
+# next let's merge (JOIN) this with our stateLevels
+stateLevels2 <- left_join(stateLevels, 
+                           state.regions,
+                           by="fips.numeric")
+
+countyFL <- county.regions %>%
+  filter(state.fips.character == "12") %>%
+  mutate(COUNTY_CODE = region - 12000)
+
+
+FL_pest_wide2 <- left_join(FL_pest_wide, 
+                           countyFL,
+                           by="COUNTY_CODE")
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

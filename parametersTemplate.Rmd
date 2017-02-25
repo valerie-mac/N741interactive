@@ -1,0 +1,162 @@
+---
+title: "State-level Pesticide Report"
+author: "Melinda K. Higgins, PhD."
+date: "February 24, 2017"
+output:
+  html_document: default
+params:
+  state:
+    choices:
+    - alabama
+    - arkansas
+    - arizona
+    - california
+    - colorado
+    - connecticut
+    - delaware
+    - florida
+    - georgia
+    - iowa
+    - idaho
+    - illinois
+    - indiana
+    - kansas
+    - kentucky
+    - louisiana
+    - massachusetts
+    - maryland
+    - maine
+    - michigan
+    - minnesota
+    - missouri
+    - mississippi
+    - montana
+    - north carolina
+    - north dakota
+    - nebraska
+    - new hampshire
+    - new jersey
+    - new mexico
+    - nevada
+    - new york
+    - ohio
+    - oklahoma
+    - oregon
+    - pennsylvania
+    - rhode island
+    - south carolina
+    - south dakota
+    - tennessee
+    - texas
+    - utah
+    - virginia
+    - vermont
+    - washington
+    - wisconsin
+    - west virginia
+    - wyoming
+    input: select
+    label: State
+    value: georgia
+---
+
+```{r statename, echo=FALSE, message=FALSE, warning=FALSE}
+firstup <- function(x) {
+   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+x
+}
+
+state <- firstup(params$state)
+```
+
+# Report for `r state`
+
+This report was generated using "Knit with parameters".
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+
+# read in the pesticide dataset
+Pesticides <- read_csv("Pesticides.csv")
+
+# compute avg pesticide level, add to dataset
+pest <- Pesticides %>% 
+  dplyr::mutate(AVG_ESTIMATE=(LOW_ESTIMATE+HIGH_ESTIMATE)/2) %>%
+  dplyr::mutate(region = (STATE_CODE*1000)+COUNTY_CODE)
+
+library(choroplethrMaps)
+# data("county.regions")
+data("state.regions")
+pestState <- left_join(
+  pest,
+  state.regions,
+  by = c("STATE_CODE" = "fips.numeric")
+  )
+
+# get top pesticides in this state
+pestByCompound <- pestState %>%
+  dplyr::filter(region.y == params$state) %>%
+  dplyr::group_by(COMPOUND) %>%
+  dplyr::summarise(value = mean(AVG_ESTIMATE, na.rm = TRUE)) %>%
+  dplyr::arrange(desc(value))
+```
+
+## Table of the Top 10 Compounds
+
+```{r table}
+
+#create table of the top 10 pesticides in this state
+knitr::kable(pestByCompound[1:10,],
+             col.names = c("Compound","Avg Levels"),
+             title = paste0("Top 10 Pesticide Levels Used in ",
+                            params$state))
+```
+
+## Map of Top Used Pesticide by County
+
+```{r map}
+
+pestTop <- pest %>%
+  filter(COMPOUND == pestByCompound$COMPOUND[1]) %>%
+  select(COMPOUND,
+         STATE_CODE,
+         COUNTY_CODE,
+         AVG_ESTIMATE,
+         region)
+
+pestTop3_wide <- pestTop %>%
+  spread(key = COMPOUND,
+         value = AVG_ESTIMATE)
+
+pestTop3_wide[is.na(pestTop3_wide)] <- 0
+
+#pestByCounty <- pest %>%
+#  dplyr::group_by(region) %>%
+#  dplyr::summarise(value = mean(AVG_ESTIMATE, na.rm = TRUE))
+
+library(choroplethr)
+
+pestpick <- pestTop3_wide[,c(3,4)]
+names(pestpick) <- c("region","value")
+
+choroplethr::county_choropleth(
+  pestpick, 
+  title = paste0(names(pestTop3_wide[,4]),
+                 " is the #1 Pesticide Used in ",
+                 state), 
+  legend = "Pesticide Levels",
+  state_zoom = params$state)
+
+```
+
+## Session Info
+
+The following `sessionInfo()` details were current when this report was produced.
+
+```{r session}
+sessionInfo()
+```
+
