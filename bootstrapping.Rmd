@@ -1,0 +1,77 @@
+---
+title: "Bootstrapping"
+author: "Melinda K. Higgins, PhD."
+date: "February 25, 2017"
+output: html_document
+---
+
+## Run Linear Regression - Extract adjusted R2 statistic
+
+Given the formula and expected distribution of the adjusted R2, compute the 95% confidence interval for the adjusted R2 linear model fit statistic.
+
+Not sure how to? This is not something you typically learn in an introductory statistics course.
+
+That is ok, we can use bootstrapping to generate a lot of random linear models based on random samples using sampling with replacement. Then we generate a lot of estimates of the adjusted R2. We can then use these estimates of the adjusted R2 to compute the mean and a 95% confidence interval.
+
+This is based on an example at the Quick-R website [http://www.statmethods.net/advstats/bootstrapping.html](http://www.statmethods.net/advstats/bootstrapping.html).
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+
+# fit a linear model
+m1 <- lm(mpg~wt+disp, data=mtcars)
+
+# get the summary model fit statistics
+sm1 <- summary(m1)
+
+# extract adjusted R2 from model fit stats
+sm1$adj.r.squared
+```
+
+## Setup Bootstrapping
+
+```{r}
+# Bootstrap 95% CI for adjusted R-Squared
+library(boot)
+
+# function to obtain R-Squared from the data 
+adjrsq <- function(formula, data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  fit <- lm(formula, data=d)
+  return(summary(fit)$adj.r.square)
+} 
+
+# bootstrapping with 1000 replications 
+results <- boot(data=mtcars, statistic=adjrsq, 
+  	R=1000, formula=mpg~wt+disp)
+```
+
+Of the 1000 boostrapped estimates, the average adjusted r2 is `r mean(results$t)`.
+
+## First 20 bootstrapped adjusted R2 values
+
+```{r}
+# view results
+knitr::kable(as.data.frame(results$t[1:20,]))
+```
+
+## Plot the distribution of the bootstrapped estimates
+
+```{r}
+# get bootstrapped results summary
+results 
+
+# plot the distribution of the boostrapped
+# adjusted R2 values indicated by the 
+# test statistic labeled "t"
+plot(results)
+```
+
+## Get the 95% Confidence Intervals for the Bootstrapped Estimate of adjusted R2
+
+```{r}
+# get 95% confidence interval 
+bci <- boot.ci(results, type="bca")
+bci
+```
+
