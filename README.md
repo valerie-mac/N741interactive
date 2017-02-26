@@ -1,4 +1,4 @@
-# N741 - Interactive tools - htmlwidgets, flexdashboard & knitting with parameters
+# N741 - Interactive tools - htmlwidgets, flexdashboard, knitting with parameters & bootstrapping
 
 ## `htmlwidgets` for R
 
@@ -21,3 +21,8 @@ This basically consists of adding the `params` option to your YAML code at the t
 ![Knit with Parameters GUI](knitWparams.jpg)
 
 See today's example with "knit with parameters" see [https://cdn.rawgit.com/melindahiggins2000/N741interactive/master/parametersTemplate.html](https://cdn.rawgit.com/melindahiggins2000/N741interactive/master/parametersTemplate.html).
+
+## Boostrapping
+
+Bootstrapping example [https://cdn.rawgit.com/melindahiggins2000/N741interactive/master/bootstrapping.html](https://cdn.rawgit.com/melindahiggins2000/N741interactive/master/bootstrapping.html).
+
