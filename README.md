@@ -1,4 +1,4 @@
-# N741 - Interactive tools - htmlwidgets and flexdashboard
+# N741 - Interactive tools - htmlwidgets, flexdashboard & knitting with parameters
 
 ## `htmlwidgets` for R
 
