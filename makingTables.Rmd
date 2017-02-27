@@ -102,6 +102,8 @@ d4$studytime <- factor(d4$studytime,
                                    ">10hr"))
 
 attr(d4[["studytime"]], "label") <- var.labels["studytime"]
+student <- d4
+save(student, file = "student.RData")
 ```
 
 ## Summary Statistics - Continuous/Ordinal Numeric Data
@@ -199,7 +201,7 @@ t2 <- d4 %>%
 
 # make a summary table
 knitr::kable(t2,
-             col.names = c(var.labels["Medu"],
+             col.names = c("Mother's Education",
                            "Frequency",
                            "Percent"),
              caption="Frequency Table for Mother's Education")
