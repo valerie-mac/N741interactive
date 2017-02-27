@@ -36,7 +36,7 @@ Bootstrapping example [https://cdn.rawgit.com/melindahiggins2000/N741interactive
 
 ## Working with Tables
 
-See **"xxxxxxxx.Rmd"**
+See **"makingTables.Rmd"**
 
 Making well formatted tables in `Rmarkdown` can be challenging. A few good  overviews on making tables (and figures) in `Rmarkdown` are:
 
@@ -50,5 +50,6 @@ Other R packages that can help make formatted tables:
 * [http://rapport-package.info/](http://rapport-package.info/)
 * [http://davidgohel.github.io/ReporteRs/](http://davidgohel.github.io/ReporteRs/) & [https://cran.r-project.org/web/packages/ReporteRs/index.html](https://cran.r-project.org/web/packages/ReporteRs/index.html)
 
-TODAY'S EXAMPLE - see today's table example at
+**TODAY'S EXAMPLE** - see today's table example at [https://cdn.rawgit.com/melindahiggins2000/N741interactive/master/makingTables.html](https://cdn.rawgit.com/melindahiggins2000/N741interactive/master/makingTables.html).
+
 
