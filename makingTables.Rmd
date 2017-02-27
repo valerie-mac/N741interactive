@@ -1,0 +1,244 @@
+---
+title: "Making Tables"
+author: "Melinda K. Higgins, PhD."
+date: "February 27, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## UCI - Student Performance Dataset
+
+For this table making exercise we'll use the "Student Performance" dataset from the UCI data repository at [http://archive.ics.uci.edu/ml/datasets/Student+Performance](http://archive.ics.uci.edu/ml/datasets/Student+Performance).
+
+The code below reads in 2 files and merges them together for student performance in two distinct subjects: Mathematics (mat) and Portuguese language (por). The code then adds variable labels and coding for the various ordinal variables.
+
+```{r}
+d1=read.table("student-mat.csv",sep=";",header=TRUE)
+d2=read.table("student-por.csv",sep=";",header=TRUE)
+d1$class <- rep("Math",times=nrow(d1))
+d2$class <- rep("Portugese",times=nrow(d2))
+
+d4 = rbind(d1,d2) #1044 obs by 33 vars
+
+# add variable labels
+
+var.labels = c(school="School",
+               sex="Student Sex",
+               age="Student Age",
+               address="Urban or Rural",
+               famsize="Family Size",  
+               Pstatus="Parents Cohabitation Status",  
+               Medu="Mothers Education",
+               Fedu="Fathers Education",
+               Mjob="Mothers Job",
+               Fjob="Fathers Job",
+               reason="Reason to Choose School",
+               guardian="Students Guardian",
+               traveltime="Home to School Travel Time",
+               studytime="Weekly Study Time",
+               failures="Number Past Class Failures",
+               schoolsup="Extra Educational Support",
+               famsup="Family Educational Support",
+               paid="Extra Paid Classes within Subject",
+               activities="Extra Curricular Activities",
+               nursery="Attended Nursery School",
+               higher="Wants to Take Higher Education",
+               internet="Internet Access at Home",
+               romantic="Wants a Romantic Relationship",
+               famrel="Quality of Family Relationships 1=very bad to 5=excellent",
+               freetime="Free time after school 1=very low to 5=very high",
+               goout="Going out with friends 1=very low to 5=very high",
+               Dalc="Workday Alcohol Consumptions 1=very low to 5=very high",
+               Walc="Weekend Alcohol Consumption 1=very low to 5=very high",
+               health="Current Health Status  1=very bad to 5=very good",
+               absences="Number of School Absences",
+               G1="First Period Grade 0-20",
+               G2="Second Period Grade 0-20",
+               G3="Final Grade 0-20",
+               class="Course")
+
+for(var in names(var.labels)) {
+  attr(d4[[var]], "label") <- var.labels[var]
+}
+
+# convert to factor, add code levels and labels
+d4$Medu <- factor(d4$Medu,
+                  levels = c(0,1,2,3,4),
+                  labels = c("None", 
+                             "Primary Education (4th grade)",
+                             "5th to 9th grade",
+                             "Secondary Education",
+                             "Higher Education"))
+
+attr(d4[["Medu"]], "label") <- var.labels["Medu"]
+
+d4$Fedu <- factor(d4$Fedu,
+                  levels = c(0,1,2,3,4),
+                  labels = c("None", 
+                             "Primary Education (4th grade)",
+                             "5th to 9th grade",
+                             "Secondary Education",
+                             "Higher Education"))
+
+attr(d4[["Fedu"]], "label") <- var.labels["Fedu"]
+
+d4$traveltime <- factor(d4$traveltime,
+                  levels = c(1,2,3,4),
+                  labels = c("<15min", 
+                             "15-30min",
+                             "30min - 1hr",
+                             ">1hr"))
+
+attr(d4[["traveltime"]], "label") <- var.labels["traveltime"]
+
+d4$studytime <- factor(d4$studytime,
+                        levels = c(1,2,3,4),
+                        labels = c("<2hr", 
+                                   "2-5hr",
+                                   "5-10hr",
+                                   ">10hr"))
+
+attr(d4[["studytime"]], "label") <- var.labels["studytime"]
+```
+
+## Summary Statistics - Continuous/Ordinal Numeric Data
+
+We can use the `summarise()` command from `dplyr` to compile statistics on continuous/ordinal numeric data like `G1`, `G2`, and `G3` which are the grades from 1st and 2nd periods and the final grade. Using the code below, the mean and standard deviations are computed for each of these grade variables. THe results are then saved into a data object `t1` which is a `data.frame` class object. This can then be printed out as a table using the `knitr::kable()` function.
+
+```{r}
+library(dplyr)
+# run some summaries
+
+t1 <- d4 %>%
+  summarise(avgG1 = mean(G1, na.rm=TRUE),
+            sdG1  =   sd(G1, na.rm=TRUE),
+            avgG2 = mean(G2, na.rm=TRUE),
+            sdG2  =   sd(G2, na.rm=TRUE),
+            avgG3 = mean(G3, na.rm=TRUE),
+            sdG3  =   sd(G3, na.rm=TRUE))
+
+knitr::kable(t1)
+```
+
+While this is an OK table, we can use the options in `kable()` to clean up the column headings and add a title.
+
+```{r}
+knitr::kable(t1,
+             col.names=c("Mean G1","SD G1",
+                         "Mean G2","SD G2",
+                         "Mean G3","SD G3"),
+             caption="Summary Statistics of Grades 1, 2, & 3")
+```
+
+We can also use the `group_by()` function in `dplyr` to get these summary statistics by "group" - in this case by "class", Mathematics or Portugese classes.
+
+```{r}
+
+t1 <- d4 %>%
+  group_by(class) %>%
+  summarise(avgG1 = mean(G1, na.rm=TRUE),
+            sdG1  =   sd(G1, na.rm=TRUE),
+            avgG2 = mean(G2, na.rm=TRUE),
+            sdG2  =   sd(G2, na.rm=TRUE),
+            avgG3 = mean(G3, na.rm=TRUE),
+            sdG3  =   sd(G3, na.rm=TRUE))
+
+knitr::kable(t1,
+             col.names=c("Class",
+                         "Mean G1","SD G1",
+                         "Mean G2","SD G2",
+                         "Mean G3","SD G3"),
+             caption="Summary Statistics of Grades 1, 2, & 3")
+```
+
+Here is code for flipping the rows and columns - transposing `t()` the data.frame. This will take what is a wider table and make it taller/longer - now with a column for the Math and Portugese classes separately.
+
+```{r}
+# transpose the data.frame - flip the rows and columns
+tt1 <- t(t1)
+
+# get the column names from the 1st row
+cn <- tt1[1,]
+
+# now remove the 1st row
+tt1 <- tt1[-1,]
+
+# create row.names for this new data.frame
+row.names(tt1) <- c("1st Period - Grade Mean",
+                    "1st Period - Grade SD",
+                    "2nd Period - Grade Mean",
+                    "2nd Period - Grade SD",
+                    "3rd Period - Grade Mean",
+                    "3rd Period - Grade SD")
+
+# use this transposed data.frame to make a new table
+knitr::kable(tt1,
+             col.names=cn)
+```
+
+## Summary Statistics - Categorical Data
+
+Getting good frequency tables is really hard in R since each piece of the table like the raw counts and relative percents and such are all highly customizable and have to be called for separately. There are several good packages for compiling these tables, even ones that look like SPSS output. Unfortunately, these do not work well with `knitr` and do not convert well into formatted tables. For the example below, we'll stay in the `tidyverse` using `summarise()` from `dplyr` and use `knitr::kable()` to make a nicer table.
+
+The example below makes a table for the Mother's level of education (`Medu`) showing the frequencies and relative percentages.
+
+```{r}
+# find the sample size or number of rows in dataset
+ss <- length(d4$Medu)
+
+# group by each level of Medu
+# find the raw counts using n()
+# then compute the relative % by dividing by ss
+t2 <- d4 %>%
+  group_by(Medu) %>%
+  summarise(freq = n(),
+            pct = n()*100/ss)
+
+# make a summary table
+knitr::kable(t2,
+             col.names = c(var.labels["Medu"],
+                           "Frequency",
+                           "Percent"),
+             caption="Frequency Table for Mother's Education")
+```
+
+## Making tables for linear model summaries
+
+For the quick example below, the built-in `mtcars` dataset is used. Two models are built and the fitted coefficients from each model are shown and then a table is also made showing the comparison between the 2 models.
+
+### Model 1 : MPG modeled by Car's Weights and Engine Displacement
+
+```{r}
+m1 <- lm(mpg~wt+disp, data=mtcars)
+sm1 <- summary(m1)
+knitr::kable(sm1$coefficients,
+             caption="Model 1 : mpg~wt+disp")
+```
+
+### Model 2 : PG modeled by Car's Weights and Engine Displacement and Horsepower
+
+```{r}
+m2 <- lm(mpg~wt+disp+hp, data=mtcars)
+sm2 <- summary(m2)
+knitr::kable(sm2$coefficients,
+             caption="Model 2 : mpg~wt+disp+hp")
+```
+
+### Compare models using the `anova()` function
+
+```{r}
+anova(m1,m2)
+```
+
+### Put comparison in a table
+
+```{r}
+m1m2 <- anova(m1,m2)
+row.names(m1m2) <- c("Model 1","Model 2")
+knitr::kable(m1m2,
+             caption = "Compare M1 and M2")
+```
+
