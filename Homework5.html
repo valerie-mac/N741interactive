@@ -126,17 +126,93 @@ $(document).ready(function () {
 
 <div id="homework-5---due-march-15-2017" class="section level1">
 <h1>Homework 5 - DUE March 15, 2017</h1>
-<p>For this homework, continue to work with the “Student Performance” dataset we used in today’s class. As part of that exercise, we created and saved the data as “student.RData” which is an R-formatted data file. You can load the data.frame <code>student</code> back via this code chunk…</p>
-<pre class="r"><code>load(file = &quot;student.RData&quot;)</code></pre>
+<p>For this homework, we’ll work with the “Wong” dataset built in to the <code>car</code> package. The “Wong” data frame has 331 row and 7 columns. The observations are longitudinal data on recovery of IQ after comas of varying duration for 200 subjects. The data are from Wong, Monette, and Weiner (2001) and are for 200 patients who sustained traumatic brain injuries resulting in comas of varying duration. After awakening from their comas, patients were periodically administered a standard IQ test, but the average number of measurements per patient is small (331/200 = 1.7). <em>To get more info type <code>??Wong</code>.</em></p>
+<p>The 7 variables in the dataset are:</p>
+<ul>
+<li><code>id</code>
+<ul>
+<li>patient ID number.</li>
+</ul></li>
+<li><code>days</code>
+<ul>
+<li>number of days post coma at which IQs were measured.</li>
+</ul></li>
+<li><code>duration</code>
+<ul>
+<li>duration of the coma in days.</li>
+</ul></li>
+<li><code>sex</code>
+<ul>
+<li>a factor with levels Female and Male.</li>
+</ul></li>
+<li><code>age</code>
+<ul>
+<li>in years at the time of injury.</li>
+</ul></li>
+<li><code>piq</code>
+<ul>
+<li>performance (i.e., mathematical) IQ.</li>
+</ul></li>
+<li><code>viq</code>
+<ul>
+<li>verbal IQ.</li>
+</ul></li>
+</ul>
+<div id="load-dataset-in-from-car-package" class="section level2">
+<h2>Load dataset in from <code>car</code> package</h2>
+<pre class="r"><code>library(car)
+data(Wong)
+
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: 'dplyr'</code></pre>
+<pre><code>## The following object is masked from 'package:car':
+## 
+##     recode</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code># add an age group variable
+Wong$agegrp &lt;- case_when(
+  (Wong$age &gt; 0 &amp; Wong$age &lt;= 10) ~ 1,
+  (Wong$age &gt; 10 &amp; Wong$age &lt;= 20) ~ 2,
+  (Wong$age &gt; 20 &amp; Wong$age &lt;= 30) ~ 3,
+  (Wong$age &gt; 30 &amp; Wong$age &lt;= 40) ~ 4,
+  (Wong$age &gt; 40 &amp; Wong$age &lt;= 50) ~ 5,
+  (Wong$age &gt; 50 &amp; Wong$age &lt;= 60) ~ 6,
+  (Wong$age &gt; 60 &amp; Wong$age &lt;= 70) ~ 7,
+  (Wong$age &gt; 70 &amp; Wong$age &lt;= 100) ~ 8)
+
+# convert to factor, add code levels and labels
+Wong$agegrp &lt;- factor(Wong$agegrp,
+                  levels = c(1,2,3,4,5,6,7,8),
+                  labels = c(&quot;Ages 1-10&quot;,
+                             &quot;Ages 11-10&quot;,
+                             &quot;Ages 21-10&quot;,
+                             &quot;Ages 31-10&quot;,
+                             &quot;Ages 41-10&quot;,
+                             &quot;Ages 51-10&quot;,
+                             &quot;Ages 61-70&quot;,
+                             &quot;Ages 71-100&quot;))</code></pre>
 <p>Using this dataset, and today’s demos complete the following tasks:</p>
 <ol style="list-style-type: decimal">
-<li><p>Make a table containing the mean and standard deviation of the overall grades (G3) grouped by <code>school</code> and <code>sex</code>. Give the table a title using the <code>caption=</code> option and update the column names with something nice using the <code>col.names=</code> option in the <code>knitr::kable()</code> command. <em>HINT: You can list more than 1 variable when using <code>group_by()</code> in the <code>dplyr</code> package, for 2 variables you would use <code>dplyr::group_by(var1,var2)</code>.</em></p></li>
-<li><p>Make a table containing the frequencies and relative percentages for Mother’s job (the <code>Mjob</code> variable in the <code>student</code> data.frame). Use the example we did in class to help guide you.</p></li>
-<li><p>Make a regression model (Model 1) for the student’s overall grade (<code>G3</code>) using <code>school</code>, <code>sex</code> and <code>age</code>. Put the regression model results into a table.</p></li>
-<li><p>Make a second regression model (Model 2) for the student’s overall grade (<code>G3</code>) using <code>school</code>, <code>sex</code>, <code>age</code>, plus <code>freetime</code> and <code>health</code>. Put the regression model results into a table.</p></li>
+<li><p>Make a table of non-parametric statistics (median and IQR) for the number of days and duration grouped by <code>sex</code>. You’ll be using <code>summarise()</code> from the <code>dplyr</code> package. For a given variable <code>x</code> you’ll use <code>median(x, na.rm=TRUE)</code>, <code>quantile(x, 0.25, na.rm=TRUE)</code>, and <code>quantile(x, 0.75, na.rm=TRUE)</code>. Give the table a title using the <code>caption=</code> option and update the column names with something nice using the <code>col.names=</code> option in the <code>knitr::kable()</code> command.</p></li>
+<li><p>Make a table of parametric statistics (mean and SD) for the number of days and duration grouped by <code>sex</code>. Like the table above, you’ll be using <code>summarise()</code> from the <code>dplyr</code> package. Now you’ll use <code>mean(x, na.rm=TRUE)</code> and <code>sd(x, na.rm=TRUE)</code>. Give the table a title using the <code>caption=</code> option and update the column names with something nice using the <code>col.names=</code> option in the <code>knitr::kable()</code> command.</p></li>
+<li><p>Make a table containing the frequencies and relative percentages for <code>agegrp</code>. Use the example we did in class to help guide you.</p></li>
+<li><p>Make a regression model (Model 1) for the performance IQ (<code>piq</code>) using <code>age</code> and <code>sex</code>. Put the regression model results into a table.</p></li>
+<li><p>Make a second regression model (Model 2) for performance IQ (<code>piq</code>) using <code>age</code> and <code>sex</code> plus <code>days</code> and <code>duration</code>. Put the regression model results into a table.</p></li>
 <li><p>Finally, make a table showing the results from the <code>anova()</code> command comparing Model 1 and Model 2 you made above using the example we did in class as a guide.</p></li>
 <li><p>STUDENT CHOICE - pick either a <code>htmlwidget</code> from <a href="http://gallery.htmlwidgets.org/" class="uri">http://gallery.htmlwidgets.org/</a> or do a “flexdashboard” using the templates at <a href="http://rmarkdown.rstudio.com/flexdashboard/" class="uri">http://rmarkdown.rstudio.com/flexdashboard/</a> as a guide.</p></li>
 </ol>
+<div id="references" class="section level3">
+<h3>References</h3>
+<p>Wong, P. P., Monette, G., and Weiner, N. I. (2001) Mathematical models of cognitive recovery. Brain Injury, 15, 519–530.</p>
+<p>Fox, J. (2016) Applied Regression Analysis and Generalized Linear Models, Third Edition. Sage.</p>
+</div>
+</div>
 </div>
 
 
