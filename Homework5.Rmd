@@ -1,7 +1,7 @@
 ---
 title: 'N741: Homework 5'
-author: "Melinda K. Higgins, PhD."
-date: "February 27, 2017"
+author: "Valerie Mac, PhD."
+date: "March 14, 2017"
 output:
   word_document: default
   pdf_document: default
@@ -29,9 +29,13 @@ The 7 variables in the dataset are:
     + performance (i.e., mathematical) IQ.
 * `viq`
     + verbal IQ.
-
+## Install needed packages
+```{r}
+install.packages("car",repos = "http://cran.us.r-project.org")
+install.packages("dyplr",repos = "http://cran.us.r-project.org")
+install.packages("DT",repos = "http://cran.us.r-project.org")
+```
 ## Load dataset in from `car` package
-
 ```{r}
 library(car)
 data(Wong)
@@ -65,18 +69,100 @@ Using this dataset, and today's demos complete the following tasks:
 
 1. Make a table of non-parametric statistics (median and IQR) for the number of days and duration grouped by `sex`. You'll be using `summarise()` from the `dplyr` package. For a given variable `x` you'll use `median(x, na.rm=TRUE)`, `quantile(x, 0.25, na.rm=TRUE)`, and `quantile(x, 0.75, na.rm=TRUE)`. Give the table a title using the `caption=` option and update the column names with something nice using the `col.names=` option in the `knitr::kable()` command. 
 
+# Making a table of non-parametric statistics (median and IQR) for the number of days and duration grouped by `sex`
+```{r}
+Wong %>%
+    group_by(sex) %>%
+    summarise(mediandays= median(days, na.rm=TRUE),
+              quantile(days, 0.25, na.rm=TRUE),
+              quantile(days, 0.75, na.rm=TRUE),
+              medianduration= median(duration, na.rm=TRUE),
+              quantile(duration, 0.25, na.rm=TRUE),
+              quantile(duration, 0.75, na.rm=TRUE))%>%
+  
+knitr::kable(col.names=c("Sex","Median Days","1st Quartile Days","3rd Quartile Days","Median Duration","1st Quartile Duration", "3rd Quartile Duration"),
+                 caption="Days and Duration: Nonparametric Stats by Sex")
+```
 2.  Make a table of parametric statistics (mean and SD) for the performance outcomes `piq` and `viq` grouped by `sex`. Like the table above, you'll be using `summarise()` from the `dplyr` package. Now you'll use `mean(x, na.rm=TRUE)` and `sd(x, na.rm=TRUE)`. Give the table a title using the `caption=` option and update the column names with something nice using the `col.names=` option in the `knitr::kable()` command. 
+##Making a table of parametric statistics (mean and SD) for the performance outcomes `piq` and `viq` grouped by `sex'
+```{r}
+T2 <- Wong %>%
+    group_by(sex)%>%
+    summarise(meanpiq= mean(piq, na.rm=TRUE),
+              stddevpiq= sd(piq, na.rm=TRUE),
+              meanvic= mean(viq, na.rm=TRUE),
+              stdvic= sd(viq, na.rm=TRUE))
+knitr::kable(T2, 
+             col.names=c("Sex","Mean PIQ","SD PIQ","Mean VIQ","SD VIQ"),
+                 caption="Performance Outcomes Piq and Vic: Parametric Stats by Sex")
+```
 
 3. Make a table containing the frequencies and relative percentages for `agegrp`. Use the example we did in class to help guide you.
+##Making a table containing the frequencies and relative percentages for `agegrp`
+```{r}
+# find the sample size or number of rows in dataset
+ss <- length(Wong$agefrp)
+# group by each level of Medu
+# find the raw counts using n()
+# then compute the relative % by dividing by ss
+T3 <- Wong %>%
+  group_by(agegrp) %>%
+  summarise(freq = n(),
+            pct = n()*100/ss)
+
+# make a summary table
+knitr::kable(T3,
+             col.names = c("Age Group",
+                           "Frequency",
+                           "Percent"),
+             caption="Frequency Table for Age Group")
+```
 
 4. Make a regression model (Model 1) for the performance IQ (`piq`) using `age` and `sex`. Put the regression model results into a table.
+##Making a regression model (Model 1) for the performance IQ (`piq`) using `age` and `sex`
+```{r}
+#run the model for piq with sex and age
+Mod1 <- lm(piq ~ age + sex, data= Wong)
 
+# look at the results
+SM1 <- summary(Mod1) 
+knitr::kable(SM1$coefficients,
+             caption="Model 1 : piq~age+sex")
+```
 5. Make a second regression model (Model 2) for performance IQ (`piq`) using `age` and `sex` plus `days` and `duration`. Put the regression model results into a table.
+```{r}
+#run the model for piq with sex and age
+Mod2 <- lm(piq ~ age + sex + days + duration, data= Wong)
 
+# look at the results
+SM2 <- summary(Mod2) 
+knitr::kable(SM2$coefficients,
+             caption="Model 2 : piq~age+sex+days+duration")
+```
 6. Finally, make a table showing the results from the `anova()` command comparing Model 1 and Model 2 you made above using the example we did in class as a guide. 
+
+### Compare models using the `anova()` function
+
+```{r}
+anova(Mod1,Mod2)
+```
+
+### Put comparison in a table
+
+```{r}
+M1M2 <- anova(Mod1,Mod2)
+row.names(M1M2) <- c("Model 1","Model 2")
+knitr::kable(M1M2,
+             caption = "Comparing Mod1 and Mod2")
+```
 
 7. STUDENT CHOICE - pick either a `htmlwidget` from [http://gallery.htmlwidgets.org/](http://gallery.htmlwidgets.org/) or do a "flexdashboard" using the templates at [http://rmarkdown.rstudio.com/flexdashboard/](http://rmarkdown.rstudio.com/flexdashboard/) as a guide.
 
+
+## Making an interactive datatable with the ANOVA 
+```{r}
+DT::datatable(M1M2, options = list(pageLength = 2, caption="Comparing Mod1 and Mod2"))
+```
 ### References
 
 Wong, P. P., Monette, G., and Weiner, N. I. (2001) Mathematical models of cognitive recovery. Brain Injury, 15, 519–530.
