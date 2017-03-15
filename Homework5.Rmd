@@ -3,10 +3,10 @@ title: 'N741: Homework 5'
 author: "Valerie Mac, PhD."
 date: "March 14, 2017"
 output:
-  word_document: default
-  pdf_document: default
   html_document:
     keep_md: yes
+  pdf_document: default
+  word_document: default
 ---
 
 # Homework 5 - DUE March 15, 2017
@@ -163,8 +163,9 @@ knitr::kable(M1M2,
 ```{r}
 DT::datatable(M1M2, options = list(pageLength = 2, caption="Comparing Mod1 and Mod2"))
 ```
-### References
+Repository at: https://github.com/valerie-mac/N741interactive <https://github.com/valerie-mac/N741interactive>
 
+### References
 Wong, P. P., Monette, G., and Weiner, N. I. (2001) Mathematical models of cognitive recovery. Brain Injury, 15, 519–530.
 
 Fox, J. (2016) Applied Regression Analysis and Generalized Linear Models, Third Edition. Sage.

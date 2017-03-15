@@ -37,7 +37,7 @@ install.packages("car",repos = "http://cran.us.r-project.org")
 ## package 'car' successfully unpacked and MD5 sums checked
 ## 
 ## The downloaded binary packages are in
-## 	C:\Users\gneis\AppData\Local\Temp\Rtmp4CKCFM\downloaded_packages
+## 	C:\Users\gneis\AppData\Local\Temp\RtmpIDdGEN\downloaded_packages
 ```
 
 ```r
@@ -66,7 +66,7 @@ install.packages("DT",repos = "http://cran.us.r-project.org")
 ## package 'DT' successfully unpacked and MD5 sums checked
 ## 
 ## The downloaded binary packages are in
-## 	C:\Users\gneis\AppData\Local\Temp\Rtmp4CKCFM\downloaded_packages
+## 	C:\Users\gneis\AppData\Local\Temp\RtmpIDdGEN\downloaded_packages
 ```
 ## Load dataset in from `car` package
 
@@ -319,10 +319,11 @@ Model 2       326   72585.66    2    2381.933   5.348922   0.0051796
 DT::datatable(M1M2, options = list(pageLength = 2, caption="Comparing Mod1 and Mod2"))
 ```
 
-<!--html_preserve--><div id="htmlwidget-af4ade08ca34beff1d60" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-af4ade08ca34beff1d60">{"x":{"filter":"none","data":[["Model 1","Model 2"],[328,326],[74967.5898509986,72585.6571162971],[null,2],[null,2381.93273470152],[null,5.34892224140485],[null,0.00517957386964677]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> \u003c/th>\n      <th>Res.Df\u003c/th>\n      <th>RSS\u003c/th>\n      <th>Df\u003c/th>\n      <th>Sum of Sq\u003c/th>\n      <th>F\u003c/th>\n      <th>Pr(&gt;F)\u003c/th>\n    \u003c/tr>\n  \u003c/thead>\n\u003c/table>","options":{"pageLength":2,"caption":"Comparing Mod1 and Mod2","columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[2,10,25,50,100]}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
-### References
+<!--html_preserve--><div id="htmlwidget-af916d7ca595463349e2" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-af916d7ca595463349e2">{"x":{"filter":"none","data":[["Model 1","Model 2"],[328,326],[74967.5898509986,72585.6571162971],[null,2],[null,2381.93273470152],[null,5.34892224140485],[null,0.00517957386964677]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> \u003c/th>\n      <th>Res.Df\u003c/th>\n      <th>RSS\u003c/th>\n      <th>Df\u003c/th>\n      <th>Sum of Sq\u003c/th>\n      <th>F\u003c/th>\n      <th>Pr(&gt;F)\u003c/th>\n    \u003c/tr>\n  \u003c/thead>\n\u003c/table>","options":{"pageLength":2,"caption":"Comparing Mod1 and Mod2","columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[2,10,25,50,100]}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+Repository at: https://github.com/valerie-mac/N741interactive <https://github.com/valerie-mac/N741interactive>
 
+### References
 Wong, P. P., Monette, G., and Weiner, N. I. (2001) Mathematical models of cognitive recovery. Brain Injury, 15, 519–530.
 
 Fox, J. (2016) Applied Regression Analysis and Generalized Linear Models, Third Edition. Sage.
