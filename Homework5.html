@@ -169,7 +169,7 @@ $(document).ready(function () {
 <pre><code>## package 'car' successfully unpacked and MD5 sums checked
 ## 
 ## The downloaded binary packages are in
-##  C:\Users\gneis\AppData\Local\Temp\RtmpIDdGEN\downloaded_packages</code></pre>
+##  C:\Users\gneis\AppData\Local\Temp\Rtmp8SDEK8\downloaded_packages</code></pre>
 <pre class="r"><code>install.packages(&quot;dyplr&quot;,repos = &quot;http://cran.us.r-project.org&quot;)</code></pre>
 <pre><code>## Installing package into 'C:/Users/gneis/Documents/R/win-library/3.3'
 ## (as 'lib' is unspecified)</code></pre>
@@ -180,7 +180,7 @@ $(document).ready(function () {
 <pre><code>## package 'DT' successfully unpacked and MD5 sums checked
 ## 
 ## The downloaded binary packages are in
-##  C:\Users\gneis\AppData\Local\Temp\RtmpIDdGEN\downloaded_packages</code></pre>
+##  C:\Users\gneis\AppData\Local\Temp\Rtmp8SDEK8\downloaded_packages</code></pre>
 <div id="load-dataset-in-from-car-package" class="section level2">
 <h2>Load dataset in from <code>car</code> package</h2>
 <pre class="r"><code>library(car)</code></pre>
@@ -282,17 +282,10 @@ knitr::kable(col.names=c(&quot;Sex&quot;,&quot;Median Days&quot;,&quot;1st Quart
 <td align="right">mes <code>piq</code> and <code>viq</code> grou</td>
 <td align="right">ped by <code>sex</code>. Like the table above, you’ll be using <code>summarise()</code> from the <code>dplyr</code> package. Now you’ll use <code>mean(x, na.rm=TRUE)</code> and <code>sd(x, na.rm=TRUE)</code>. Give the table a title using the <code>caption=</code> option and update the column names with something nice using the <code>col.names=</code> option in the <code>knitr::kable()</code> command.</td>
 </tr>
-<tr class="even">
-<td align="left">##Making</td>
-<td align="right">a table of par</td>
-<td align="right">ametric statistics (</td>
-<td align="right">mean and SD) for the</td>
-<td align="right">performance outco</td>
-<td align="right">mes <code>piq</code> and <code>viq</code> grou</td>
-<td align="right">ped by `sex’</td>
-</tr>
 </tbody>
 </table>
+<div id="making-a-table-of-parametric-statistics-mean-and-sd-for-the-performance-outcomes-piq-and-viq-grouped-by-sex" class="section level2">
+<h2>Making a table of parametric statistics (mean and SD) for the performance outcomes <code>piq</code> and <code>viq</code> grouped by `sex’</h2>
 <pre class="r"><code>T2 &lt;- Wong %&gt;%
     group_by(sex)%&gt;%
     summarise(meanpiq= mean(piq, na.rm=TRUE),
@@ -331,8 +324,11 @@ knitr::kable(T2,
 </tbody>
 </table>
 <ol start="3" style="list-style-type: decimal">
-<li>Make a table containing the frequencies and relative percentages for <code>agegrp</code>. Use the example we did in class to help guide you. ##Making a table containing the frequencies and relative percentages for <code>agegrp</code></li>
+<li>Make a table containing the frequencies and relative percentages for <code>agegrp</code>. Use the example we did in class to help guide you.</li>
 </ol>
+</div>
+<div id="making-a-table-containing-the-frequencies-and-relative-percentages-for-agegrp" class="section level2">
+<h2>Making a table containing the frequencies and relative percentages for <code>agegrp</code></h2>
 <pre class="r"><code># find the sample size or number of rows in dataset
 ss &lt;- length(Wong$agefrp)
 # group by each level of Medu
@@ -507,15 +503,11 @@ knitr::kable(SM2$coefficients,
 <td align="right">-3.1282468</td>
 <td align="right">0.0019172</td>
 </tr>
-<tr class="even">
-<td>6. Finally, ma</td>
-<td align="right">ke a table sh</td>
-<td align="right">owing the res</td>
-<td align="right">ults from the</td>
-<td align="right"><code>anova()</code> command comparing Model 1 and Model 2 you made above using the example we did in class as a guide.</td>
-</tr>
 </tbody>
 </table>
+<ol start="6" style="list-style-type: decimal">
+<li>Finally, make a table showing the results from the <code>anova()</code> command comparing Model 1 and Model 2 you made above using the example we did in class as a guide.</li>
+</ol>
 <div id="compare-models-using-the-anova-function" class="section level3">
 <h3>Compare models using the <code>anova()</code> function</h3>
 <pre class="r"><code>anova(Mod1,Mod2)</code></pre>
@@ -573,11 +565,12 @@ knitr::kable(M1M2,
 <li>STUDENT CHOICE - pick either a <code>htmlwidget</code> from <a href="http://gallery.htmlwidgets.org/" class="uri">http://gallery.htmlwidgets.org/</a> or do a “flexdashboard” using the templates at <a href="http://rmarkdown.rstudio.com/flexdashboard/" class="uri">http://rmarkdown.rstudio.com/flexdashboard/</a> as a guide.</li>
 </ol>
 </div>
+</div>
 <div id="making-an-interactive-datatable-with-the-anova" class="section level2">
 <h2>Making an interactive datatable with the ANOVA</h2>
 <pre class="r"><code>DT::datatable(M1M2, options = list(pageLength = 2, caption=&quot;Comparing Mod1 and Mod2&quot;))</code></pre>
-<p><div id="htmlwidget-af916d7ca595463349e2" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-af916d7ca595463349e2">{"x":{"filter":"none","data":[["Model 1","Model 2"],[328,326],[74967.5898509986,72585.6571162971],[null,2],[null,2381.93273470152],[null,5.34892224140485],[null,0.00517957386964677]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> \u003c/th>\n      <th>Res.Df\u003c/th>\n      <th>RSS\u003c/th>\n      <th>Df\u003c/th>\n      <th>Sum of Sq\u003c/th>\n      <th>F\u003c/th>\n      <th>Pr(&gt;F)\u003c/th>\n    \u003c/tr>\n  \u003c/thead>\n\u003c/table>","options":{"pageLength":2,"caption":"Comparing Mod1 and Mod2","columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[2,10,25,50,100]}},"evals":[],"jsHooks":[]}</script> Repository at: <a href="https://github.com/valerie-mac/N741interactive" class="uri">https://github.com/valerie-mac/N741interactive</a> <a href="https://github.com/valerie-mac/N741interactive" class="uri">https://github.com/valerie-mac/N741interactive</a></p>
+<p><div id="htmlwidget-d6cd8117773e7d525124" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d6cd8117773e7d525124">{"x":{"filter":"none","data":[["Model 1","Model 2"],[328,326],[74967.5898509986,72585.6571162971],[null,2],[null,2381.93273470152],[null,5.34892224140485],[null,0.00517957386964677]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> \u003c/th>\n      <th>Res.Df\u003c/th>\n      <th>RSS\u003c/th>\n      <th>Df\u003c/th>\n      <th>Sum of Sq\u003c/th>\n      <th>F\u003c/th>\n      <th>Pr(&gt;F)\u003c/th>\n    \u003c/tr>\n  \u003c/thead>\n\u003c/table>","options":{"pageLength":2,"caption":"Comparing Mod1 and Mod2","columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[2,10,25,50,100]}},"evals":[],"jsHooks":[]}</script> Repository at: <a href="https://github.com/valerie-mac/N741interactive" class="uri">https://github.com/valerie-mac/N741interactive</a> <a href="https://github.com/valerie-mac/N741interactive" class="uri">https://github.com/valerie-mac/N741interactive</a></p>
 <div id="references" class="section level3">
 <h3>References</h3>
 <p>Wong, P. P., Monette, G., and Weiner, N. I. (2001) Mathematical models of cognitive recovery. Brain Injury, 15, 519–530.</p>

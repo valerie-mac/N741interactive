@@ -37,7 +37,7 @@ install.packages("car",repos = "http://cran.us.r-project.org")
 ## package 'car' successfully unpacked and MD5 sums checked
 ## 
 ## The downloaded binary packages are in
-## 	C:\Users\gneis\AppData\Local\Temp\RtmpIDdGEN\downloaded_packages
+## 	C:\Users\gneis\AppData\Local\Temp\Rtmp8SDEK8\downloaded_packages
 ```
 
 ```r
@@ -66,7 +66,7 @@ install.packages("DT",repos = "http://cran.us.r-project.org")
 ## package 'DT' successfully unpacked and MD5 sums checked
 ## 
 ## The downloaded binary packages are in
-## 	C:\Users\gneis\AppData\Local\Temp\RtmpIDdGEN\downloaded_packages
+## 	C:\Users\gneis\AppData\Local\Temp\Rtmp8SDEK8\downloaded_packages
 ```
 ## Load dataset in from `car` package
 
@@ -142,6 +142,7 @@ Using this dataset, and today's demos complete the following tasks:
 
 # Making a table of non-parametric statistics (median and IQR) for the number of days and duration grouped by `sex`
 
+
 ```r
 Wong %>%
     group_by(sex) %>%
@@ -165,6 +166,7 @@ Sex       Median Days   1st Quartile Days   3rd Quartile Days   Median Duration 
 Female            135               58.50              361.00                 4                       1                      11
 Male              163               59.75              431.25                 7                       1                      18
 2.  Make a table of parametric statistics (mean and SD) for the performance outcomes `piq` and `viq` grouped by `sex`. Like the table above, you'll be using `summarise()` from the `dplyr` package. Now you'll use `mean(x, na.rm=TRUE)` and `sd(x, na.rm=TRUE)`. Give the table a title using the `caption=` option and update the column names with something nice using the `col.names=` option in the `knitr::kable()` command. 
+
 ##Making a table of parametric statistics (mean and SD) for the performance outcomes `piq` and `viq` grouped by `sex'
 
 ```r
@@ -189,6 +191,7 @@ Female    89.18310   17.99866   94.35211   14.24690
 Male      87.11154   14.25658   95.13077   14.02281
 
 3. Make a table containing the frequencies and relative percentages for `agegrp`. Use the example we did in class to help guide you.
+
 ##Making a table containing the frequencies and relative percentages for `agegrp`
 
 ```r
@@ -227,6 +230,7 @@ Ages 71-100            2       Inf
 
 4. Make a regression model (Model 1) for the performance IQ (`piq`) using `age` and `sex`. Put the regression model results into a table.
 ##Making a regression model (Model 1) for the performance IQ (`piq`) using `age` and `sex`
+
 
 ```r
 #run the model for piq with sex and age
@@ -270,6 +274,7 @@ age             0.0542142    0.0604989    0.8961181   0.3708509
 sexMale        -1.7252891    2.0152576   -0.8561135   0.3925638
 days            0.0011534    0.0007457    1.5468461   0.1228705
 duration       -0.1026657    0.0328189   -3.1282468   0.0019172
+
 6. Finally, make a table showing the results from the `anova()` command comparing Model 1 and Model 2 you made above using the example we did in class as a guide. 
 
 ### Compare models using the `anova()` function
@@ -319,8 +324,8 @@ Model 2       326   72585.66    2    2381.933   5.348922   0.0051796
 DT::datatable(M1M2, options = list(pageLength = 2, caption="Comparing Mod1 and Mod2"))
 ```
 
-<!--html_preserve--><div id="htmlwidget-af916d7ca595463349e2" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-af916d7ca595463349e2">{"x":{"filter":"none","data":[["Model 1","Model 2"],[328,326],[74967.5898509986,72585.6571162971],[null,2],[null,2381.93273470152],[null,5.34892224140485],[null,0.00517957386964677]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> \u003c/th>\n      <th>Res.Df\u003c/th>\n      <th>RSS\u003c/th>\n      <th>Df\u003c/th>\n      <th>Sum of Sq\u003c/th>\n      <th>F\u003c/th>\n      <th>Pr(&gt;F)\u003c/th>\n    \u003c/tr>\n  \u003c/thead>\n\u003c/table>","options":{"pageLength":2,"caption":"Comparing Mod1 and Mod2","columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[2,10,25,50,100]}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<!--html_preserve--><div id="htmlwidget-d6cd8117773e7d525124" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d6cd8117773e7d525124">{"x":{"filter":"none","data":[["Model 1","Model 2"],[328,326],[74967.5898509986,72585.6571162971],[null,2],[null,2381.93273470152],[null,5.34892224140485],[null,0.00517957386964677]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> \u003c/th>\n      <th>Res.Df\u003c/th>\n      <th>RSS\u003c/th>\n      <th>Df\u003c/th>\n      <th>Sum of Sq\u003c/th>\n      <th>F\u003c/th>\n      <th>Pr(&gt;F)\u003c/th>\n    \u003c/tr>\n  \u003c/thead>\n\u003c/table>","options":{"pageLength":2,"caption":"Comparing Mod1 and Mod2","columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[2,10,25,50,100]}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 Repository at: https://github.com/valerie-mac/N741interactive <https://github.com/valerie-mac/N741interactive>
 
 ### References
